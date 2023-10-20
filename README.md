@@ -1,7 +1,7 @@
 # JPXS Launcher
 
 A SubRosa launcher to handle multiple modded instances.  
-An app made with [Tauri](https://tauri.app/) and [SolidJS](https://www.solidjs.com)
+An app made with [Tauri](https://tauri.app/), [SolidJS](https://www.solidjs.com), [TailwindCSS](https://tailwindcss.com/) along with [Catppuccin extensions](https://tailwindcss.catppuccin.com/) for it.
 
 ## Installation
 
