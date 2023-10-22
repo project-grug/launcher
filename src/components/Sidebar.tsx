@@ -23,11 +23,22 @@ export default function () {
       </SidebarButton>
       <div class="fixed bottom-0 left-0 flex flex-row">
         {/* To-Do: Accounts Page */}
-        <A href="/accounts">
+        <A
+          href="/accounts"
+          onClick={() => {
+            setActiveButton(1);
+          }}
+        >
           <Player name="morbius" phone="3190880"></Player>
         </A>
         {/* To-Do: Settings Page */}
-        <A href="/settings" class="flex justify-end">
+        <A
+          href="/settings"
+          class="flex justify-end"
+          onClick={() => {
+            setActiveButton(2);
+          }}
+        >
           <Icon path={cog} class="w-8"></Icon>
         </A>
       </div>
