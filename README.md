@@ -18,4 +18,9 @@ To run the app, you can either run the webserver (it probably won't work) using 
 
 ## Building
 
-To build the app, all you have to do is run `npm run tauri build`. The resulting binary is placed under `src-tauri/target/release`.
+To build the app, all you have to do is run `npm run tauri build`. The resulting binary is placed under `src-tauri/target/release`.  
+Note that compilation has not been tested on every system configuration and may fail for you.
+
+## Contributing
+
+In order to run the app locally, you can follow the steps in the [Usage](#usage) section. Please be sure to use an editor or otherwise take advantage of [Prettier](https://prettier.io/), [ESLint](https://eslint.org/) and [Headwind](https://github.com/heybourn/headwind) to ensure your code meets the project's style and quality standards.

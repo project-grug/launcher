@@ -7,7 +7,7 @@ function App() {
   return (
     <Router>
       <Sidebar></Sidebar>
-      <section>
+      <section class="ml-64">
         <Routes>
           <Route path="/" component={Home} />
         </Routes>
