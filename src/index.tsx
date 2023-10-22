@@ -1,9 +1,14 @@
 /* @refresh reload */
-import { render } from 'solid-js/web'
 
-import './index.css'
-import App from './App'
+// Back-End setup
+import { init } from "./backend";
+await init();
+console.log("Back-End initialized");
+// Front-End setup
+import { render } from "solid-js/web";
 
-const root = document.getElementById('root')
+import App from "./frontend/App";
 
-render(() => <App />, root!)
+const root = document.getElementById("root");
+
+render(() => <App />, root!);
