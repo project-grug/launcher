@@ -12,9 +12,6 @@
   },
   "tauri": {
     "allowlist": {
-      "fs": {
-        "all": true
-      },
       "all": false
     },
     "bundle": {

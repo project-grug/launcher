@@ -10,5 +10,6 @@ import { render } from "solid-js/web";
 import App from "./frontend/App";
 
 const root = document.getElementById("root");
-
+// necessary if back-end has to reload, thus also reloading the front-end
+root!.innerHTML = "";
 render(() => <App />, root!);
