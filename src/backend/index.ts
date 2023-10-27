@@ -1,19 +1,26 @@
-import { ConfigurationManager } from "./ConfigurationManager";
 import { invoke } from "@tauri-apps/api";
-const configManager = new ConfigurationManager();
+enum Theme {
+  Dark = "Dark",
+  Light = "Light",
+  System = "System",
+}
+type Account = {
+  name: string;
+  phoneNumber: string;
+};
+interface Settings {
+  accounts: Account[];
+  theme: Theme;
+}
 export async function init() {
   // initialize backend
 
-  invoke("get_settings")
-    .then((result) => console.log(result))
+  invoke("get_settings_command")
+    .then((result) => {
+      const settings = result as Settings;
+      console.log(settings);
+    })
     .catch((err) => {
       console.log(err);
     });
-  /*if (!result) {
-    // create app.conf with default values
-    configManager.save();
-  } else {
-    configManager.load();
-  }*/
 }
-export { configManager };
