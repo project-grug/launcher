@@ -4,6 +4,8 @@
 use std::path::PathBuf;
 use std::fs;
 mod settings;
+use settings::save_settings;
+
 use crate::settings::{Settings, get_settings};
 
 #[cfg(target_os = "windows")]
@@ -29,10 +31,14 @@ async fn get_settings_command() -> Result<Settings, String> {
   let settings = get_settings().map_err(| err | err.to_string() );
   Ok(settings.unwrap())
 }
-
+#[tauri::command]
+async fn save_settings_command(data: Settings) -> Result<(), String> {
+  save_settings(data).map_err(| err | err.to_string())
+}
 fn main() {
   tauri::Builder::default()
     .invoke_handler(tauri::generate_handler![get_settings_command])
+    .invoke_handler(tauri::generate_handler![save_settings_command])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");
 }
