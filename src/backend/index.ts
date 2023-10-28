@@ -1,26 +1,11 @@
 import { invoke } from "@tauri-apps/api";
-enum Theme {
-  Dark = "Dark",
-  Light = "Light",
-  System = "System",
-}
-type Account = {
-  name: string;
-  phoneNumber: string;
-};
-interface Settings {
-  accounts: Account[];
-  theme: Theme;
-}
-export async function init() {
-  // initialize backend
-
-  invoke("get_settings_command")
-    .then((result) => {
-      const settings = result as Settings;
-      console.log(settings);
-    })
-    .catch((err) => {
-      console.log(err);
-    });
+import { SettingsManager, Settings } from "./SettingsManager";
+export function init() {
+  let settingsManager = new SettingsManager();
+  invoke("get_settings_command").then((data) => {
+    const settings = data as Settings;
+    console.log(settings);
+    settingsManager.setSettings(settings);
+  });
+  return settingsManager;
 }

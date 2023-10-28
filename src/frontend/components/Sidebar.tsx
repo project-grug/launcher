@@ -1,5 +1,4 @@
 import { createSignal } from "solid-js";
-import SidebarButton from "./SidebarButton";
 import Player from "./Player";
 import { A } from "@solidjs/router";
 import { Icon } from "solid-heroicons";
@@ -7,6 +6,26 @@ import { cog } from "solid-heroicons/solid";
 function getIsButtonActive(buttonIndex: number, activeButton: number) {
   return buttonIndex === activeButton;
 }
+function SidebarButton(props: {
+  href: string;
+  active: boolean;
+  text?: string;
+  children?: string;
+  callback?: () => void;
+}) {
+  return (
+    <A
+      href={props.href}
+      class={` ${
+        props.active ? "bg-base brightness-125" : ""
+      } hover:bg-crust hover:brightness-100 mx-2 py-2 rounded-xl max-w-[10rem] text-center transition-colors duration-200`}
+      onClick={props.callback}
+    >
+      {props.text !== undefined ? props.text : props.children}
+    </A>
+  );
+}
+
 export default function () {
   const [activeButton, setActiveButton] = createSignal(0);
   return (

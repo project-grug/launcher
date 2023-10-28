@@ -37,8 +37,7 @@ async fn save_settings_command(data: Settings) -> Result<(), String> {
 }
 fn main() {
   tauri::Builder::default()
-    .invoke_handler(tauri::generate_handler![get_settings_command])
-    .invoke_handler(tauri::generate_handler![save_settings_command])
+    .invoke_handler(tauri::generate_handler![save_settings_command, get_settings_command])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");
 }
