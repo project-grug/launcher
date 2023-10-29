@@ -34,18 +34,23 @@ export default function () {
       <SidebarButton
         href="/"
         active={getIsButtonActive(0, activeButton())}
-        callback={() => {
-          setActiveButton(0);
-        }}
+        callback={() => setActiveButton(0)}
       >
         Home
+      </SidebarButton>
+      <SidebarButton
+        href="/player-search"
+        active={getIsButtonActive(1, activeButton())}
+        callback={() => setActiveButton(1)}
+      >
+        Player Search
       </SidebarButton>
       <div class="fixed bottom-0 left-0 flex flex-row">
         {/* To-Do: Accounts Page */}
         <A
           href="/accounts"
           onClick={() => {
-            setActiveButton(1);
+            setActiveButton(2);
           }}
         >
           <Player name="morbius" phone="3190880"></Player>
@@ -55,7 +60,7 @@ export default function () {
           href="/settings"
           class="flex justify-end"
           onClick={() => {
-            setActiveButton(2);
+            setActiveButton(3);
           }}
         >
           <Icon path={cog} class="w-8"></Icon>
