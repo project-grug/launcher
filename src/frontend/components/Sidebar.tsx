@@ -45,12 +45,19 @@ export default function () {
       >
         Player Search
       </SidebarButton>
+      <SidebarButton
+        href="/server-list"
+        active={getIsButtonActive(2, activeButton())}
+        callback={() => setActiveButton(2)}
+      >
+        Server List
+      </SidebarButton>
       <div class="fixed bottom-0 left-0 flex flex-row">
         {/* To-Do: Accounts Page */}
         <A
           href="/accounts"
           onClick={() => {
-            setActiveButton(2);
+            setActiveButton(9);
           }}
         >
           <Player name="morbius" phone="3190880"></Player>
@@ -60,7 +67,7 @@ export default function () {
           href="/settings"
           class="flex justify-end"
           onClick={() => {
-            setActiveButton(3);
+            setActiveButton(10);
           }}
         >
           <Icon path={cog} class="w-8"></Icon>
