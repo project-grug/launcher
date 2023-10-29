@@ -21,6 +21,9 @@ class SettingsManager {
       accounts: [],
       theme: Theme.System,
     };
+    // update the current theme to match the saved theme
+    document.body.classList.remove("mocha");
+    this.setTheme(this.settings.theme);
   }
   getSettings() {
     return this.settings;
@@ -33,6 +36,9 @@ class SettingsManager {
   }
   setSettings(settings: Settings) {
     this.settings = settings;
+    // update the current theme to match the saved theme
+    document.body.classList.remove("mocha");
+    this.setTheme(this.settings.theme);
   }
   addAccount(account: Account) {
     this.settings.accounts.push(account);
@@ -46,6 +52,7 @@ class SettingsManager {
     return this.settings.theme;
   }
   async setTheme(theme: Theme) {
+    console.log(`setting theme to ${theme}`);
     const systemTheme = await this.getSystemTheme();
     if (this.settings.theme === Theme.Dark) {
       document.body.classList.remove("mocha");
