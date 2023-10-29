@@ -1,5 +1,5 @@
 import "./App.css";
-import { lazy } from "solid-js";
+import { lazy, Suspense } from "solid-js";
 import { Router, Route, Routes } from "@solidjs/router";
 import Sidebar from "./components/Sidebar";
 const Home = lazy(() => import("./pages/Home"));
@@ -11,12 +11,20 @@ function App() {
     <Router>
       <Sidebar></Sidebar>
       <section class="ml-64">
-        <Routes>
-          <Route path="/" component={Home} />
-          <Route path="/player-search" component={PlayerSearch} />
-          <Route path="/server-list" component={ServerList} />
-          <Route path="/settings" component={Settings} />
-        </Routes>
+        <Suspense
+          fallback={
+            <div class="text-center py-2">
+              <p class="font-bold text-2xl">Loading...</p>
+            </div>
+          }
+        >
+          <Routes>
+            <Route path="/" component={Home} />
+            <Route path="/player-search" component={PlayerSearch} />
+            <Route path="/server-list" component={ServerList} />
+            <Route path="/settings" component={Settings} />
+          </Routes>
+        </Suspense>
       </section>
     </Router>
   );

@@ -1,8 +1,12 @@
-import { createSignal } from "solid-js";
+import { createSignal, onCleanup } from "solid-js";
 import { settingsManager } from "../..";
 import { Theme } from "../../backend/SettingsManager";
 export default function () {
   const [theme, setTheme] = createSignal(settingsManager.getTheme());
+  // save settings on leave
+  onCleanup(() => {
+    settingsManager.saveSettings();
+  });
   return (
     <div class="text-center mx-4">
       <h1 class="text-2xl font-bold tracking-wider my-3 text-text">Settings</h1>

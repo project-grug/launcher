@@ -1,4 +1,4 @@
-import { createSignal, Show } from "solid-js";
+import { createSignal, Show, onCleanup } from "solid-js";
 import { apiUrl } from "../..";
 type player = {
   name: string;
@@ -81,6 +81,9 @@ export default function () {
     steamId: "1337",
     firstSeen: "2021-01-01T00:00:00.000Z",
     lastSeen: "2021-01-01T00:00:00.000Z",
+  });
+  onCleanup(() => {
+    setPlayerSet(false);
   });
   return (
     <div class="py-4">

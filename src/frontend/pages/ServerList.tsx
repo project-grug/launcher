@@ -1,5 +1,5 @@
 import Server from "../components/Server";
-import { For, createResource } from "solid-js";
+import { For, createResource, onCleanup } from "solid-js";
 import { apiUrl } from "../..";
 type server = {
   id: number;
@@ -15,7 +15,8 @@ type server = {
   customMode?: { name: string };
   map: string;
 };
-const [servers] = createResource(async () => {
+const [servers, { refetch }] = createResource(async () => {
+  console.log("fetched servers");
   const serverList = await (await fetch(`${apiUrl}/servers`)).json();
   serverList.sort((a: server, b: server) => {
     return a.players > b.players ? -1 : 1;
@@ -23,6 +24,12 @@ const [servers] = createResource(async () => {
   return serverList;
 });
 export default function () {
+  // refetch the server list every minute
+  const timer = setTimeout(refetch, 60000);
+  onCleanup(() => {
+    console.log("stopping timer");
+    clearInterval(timer);
+  });
   return (
     <div>
       <div class="grid grid-cols-1 lg:grid-cols-2 3xl:grid-cols-3 mx-8 my-8 gap-2">
@@ -44,6 +51,11 @@ export default function () {
             ></Server>
           )}
         </For>
+      </div>
+      <div class="text-center">
+        <button onClick={refetch} class="bg-crust px-4 py-2 rounded-xl mb-4">
+          Refresh
+        </button>
       </div>
     </div>
   );
