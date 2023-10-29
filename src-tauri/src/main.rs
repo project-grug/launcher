@@ -1,10 +1,11 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
+use opener::open;
 use std::path::PathBuf;
 use std::fs;
 mod settings;
-use settings::save_settings;
+use settings::{save_settings, get_settings_path};
 
 use crate::settings::{Settings, get_settings};
 
@@ -35,9 +36,19 @@ async fn get_settings_command() -> Result<Settings, String> {
 async fn save_settings_command(data: Settings) -> Result<(), String> {
   save_settings(data).map_err(| err | err.to_string())
 }
+#[tauri::command]
+async fn open_settings_command() -> Result<(), String> {
+  let _ = open(get_settings_path()).map_err(| err | err.to_string());
+  Ok(())
+}
+#[tauri::command]
+async fn open_settings_folder_command() -> Result<(), String> {
+  let _ = open(get_base_dir()).map_err(| err | err.to_string());
+  Ok(())
+}
 fn main() {
   tauri::Builder::default()
-    .invoke_handler(tauri::generate_handler![save_settings_command, get_settings_command])
+    .invoke_handler(tauri::generate_handler![save_settings_command, get_settings_command, open_settings_command, open_settings_folder_command])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");
 }

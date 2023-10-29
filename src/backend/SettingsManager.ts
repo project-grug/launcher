@@ -15,15 +15,14 @@ interface Settings {
   theme: Theme;
 }
 class SettingsManager {
-  private settings: Settings;
+  private settings!: Settings;
   constructor(settings?: Settings) {
-    this.settings = settings || {
-      accounts: [],
-      theme: Theme.System,
-    };
-    // update the current theme to match the saved theme
-    document.body.classList.remove("mocha");
-    this.setTheme(this.settings.theme);
+    this.setSettings(
+      settings || {
+        accounts: [],
+        theme: Theme.System,
+      }
+    );
   }
   getSettings() {
     return this.settings;
@@ -39,6 +38,17 @@ class SettingsManager {
     // update the current theme to match the saved theme
     document.body.classList.remove("mocha");
     this.setTheme(this.settings.theme);
+  }
+  /**
+   * Open the settings file / folder
+   * @param openFolder Whether to open the settings folder or the settings file
+   */
+  openSettings(openFolder?: boolean) {
+    if (openFolder) {
+      invoke("open_settings_folder_command");
+    } else {
+      invoke("open_settings_command");
+    }
   }
   addAccount(account: Account) {
     this.settings.accounts.push(account);

@@ -1,5 +1,5 @@
 import Server from "../components/Server";
-import { For, createResource, onCleanup } from "solid-js";
+import { For, Suspense, createResource, onCleanup } from "solid-js";
 import { apiUrl } from "../..";
 type server = {
   id: number;
@@ -31,7 +31,13 @@ export default function () {
     clearInterval(timer);
   });
   return (
-    <div>
+    <Suspense
+      fallback={
+        <div class="text-center">
+          <p class="py-2 text-2xl">Loading...</p>
+        </div>
+      }
+    >
       <div class="grid grid-cols-1 lg:grid-cols-2 3xl:grid-cols-3 mx-8 my-8 gap-2">
         <For each={servers()}>
           {(server: server) => (
@@ -57,6 +63,6 @@ export default function () {
           Refresh
         </button>
       </div>
-    </div>
+    </Suspense>
   );
 }

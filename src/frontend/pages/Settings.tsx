@@ -39,10 +39,20 @@ export default function () {
       </section>
       <div class="text-left my-4">
         <button
-          class="py-1 px-4 bg-crust rounded-xl"
-          onClick={() => {
-            settingsManager.saveSettings();
-          }}
+          class="my-1 py-1 px-4 bg-crust rounded-xl block"
+          onClick={() => settingsManager.openSettings(false)}
+        >
+          Open Settings (JSON)
+        </button>
+        <button
+          class="my-1 py-1 px-4 bg-crust rounded-xl block"
+          onClick={() => settingsManager.openSettings(true)}
+        >
+          Open Settings Folder
+        </button>
+        <button
+          class="my-1 py-1 px-4 bg-crust rounded-xl"
+          onClick={() => settingsManager.saveSettings()}
         >
           Save
         </button>

@@ -1,7 +1,6 @@
 use std::path::{Path, PathBuf};
 use std::fs;
 use serde::{Deserialize, Serialize};
-use serde_json::json;
 use crate::get_base_dir;
 #[derive(Serialize, Deserialize)]
 pub enum Theme {
@@ -48,7 +47,7 @@ pub fn get_settings() -> Result<Settings, std::io::Error> {
 }
 pub fn save_settings(settings : Settings) -> Result<(), std::io::Error> {
     let config_path = get_settings_path();
-    let json = json!(settings).to_string();
+    let json = serde_json::to_string_pretty(&settings).map_err(| e | e).unwrap();
     println!("saving json: {}", json.as_str());
     match fs::write(config_path, json) {
         Ok(val) => {Ok(val)},
