@@ -5,11 +5,6 @@ jobs:
  build-tauri-ubuntu:
     permissions:
       contents: write
-    strategy:
-      fail-fast: false
-      matrix:
-        platform: ubuntu-latest
-
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -36,11 +31,6 @@ jobs:
  build-tauri-windows:
     permissions:
       contents: write
-    strategy:
-      fail-fast: false
-      matrix:
-        platform: windows-latest
-
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
@@ -63,11 +53,6 @@ jobs:
  build-tauri-mac:
     permissions:
       contents: write
-    strategy:
-      fail-fast: false
-      matrix:
-        platform: macos-latest
-
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
