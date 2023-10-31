@@ -25,8 +25,8 @@ jobs:
       - name: upload artifact
         uses: actions/upload-artifact@v3
         with:
-            name: artifacts
-            path: src-tauri/target/release/jpxs-launcher
+            name: linux
+            path: src-tauri/target/release/bundle/appimage/jpxs-launcher_0.1.0_amd64.AppImage
  build-tauri-windows:
     permissions:
       contents: write
@@ -46,8 +46,8 @@ jobs:
       - name: upload artifact
         uses: actions/upload-artifact@v3
         with:
-            name: artifacts
-            path: src-tauri/target/release/jpxs-launcher.exe
+            name: windows
+            path: src-tauri\target\release\bundle\nsis\jpxs-launcher_0.1.0_x64-setup.exe
  build-tauri-mac:
     permissions:
       contents: write
@@ -67,5 +67,5 @@ jobs:
       - name: upload artifact
         uses: actions/upload-artifact@v3
         with:
-            name: artifacts
-            path: src-tauri/target/release/jpxs-launcher.app
+            name: mac
+            path: src-tauri/target/release/bundle/macos/jpxs-launcher.app
