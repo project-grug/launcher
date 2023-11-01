@@ -3,18 +3,14 @@
 
 use opener::open;
 use std::path::PathBuf;
-use tokio::time::{sleep, Duration};
 use std::fs;
+mod auth;
+use auth::{create_auth_window, wait_for_auth_info};
 mod settings;
 use settings::{save_settings, get_settings_path};
 
 use crate::settings::{Settings, get_settings};
-struct AuthData {
-  username: Option<String>,
-  steam_id: Option<String>,
-  profile_url: Option<String>,
-  avatar: Option<String>,
-}
+
 #[cfg(target_os = "windows")]
 const HOMEDIR: &str = "APPDATA";
 
@@ -52,52 +48,10 @@ async fn open_settings_folder_command() -> Result<(), String> {
 #[tauri::command]
 async fn open_auth_window_command(app: tauri::AppHandle) -> Result<(), String> {
   // Open window
-  let auth_window = tauri::WindowBuilder::new(&app, 
-    "auth", 
-    tauri::WindowUrl::External("https://cityrp.jpxs.io/auth/login".parse().unwrap())
-  ).title("Login")
-  .resizable(false)
-  .maximizable(false)
-  .center()
-  .always_on_top(true)
-  .closable(true)
-  .build()
-  .expect("failed to make window");
-  let result = auth_window.show().map_err(| err | err.to_string());
-  if result.is_err() {
-    return Err(result.unwrap_err().to_string());
-  }
+  let auth_window = create_auth_window(app).map_err(| err | err.to_string()).unwrap();
+  let result = auth_window.show().map_err(| err | err.to_string()).unwrap();
   // Get response
-  let mut response: Option<AuthData> = None;
-  while response.is_none() {
-    sleep(Duration::from_secs(2)).await;
-    let url = auth_window.url();
-    let domain = url.domain();
-    if domain.unwrap() == "cityrp.jpxs.io" && url.path() == "/auth/data"{
-      let query = url.query_pairs();
-      let iter = query.into_iter();
-      let mut authdata = AuthData{
-        username: None,
-        steam_id: None,
-        profile_url: None,
-        avatar: None,
-      };
-      // constructing AuthData from query arguments
-      for arg in iter {
-        println!("arg0: {}, arg1: {}", arg.0, arg.1);
-        if arg.0 == "username" {
-          authdata.username = Some(arg.1.to_string());
-        } else if arg.0 == "steamId" {
-          authdata.steam_id = Some(arg.1.to_string());
-        } else if arg.0 == "profileUrl" {
-          authdata.profile_url = Some(arg.1.to_string());
-        } else if arg.0 == "avatar" {
-          authdata.avatar = Some(arg.1.to_string());
-        }
-      }
-      response = Some(authdata);
-    }
-  }
+  let auth_data = wait_for_auth_info(&auth_window).await;
   println!("found response! closing window.");
   let _ = auth_window.close().expect("could not close window");
   // to-do: do something with the auth data
