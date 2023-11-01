@@ -56,6 +56,10 @@ export default function () {
         >
           Save
         </button>
+        <p class="text-subtext0 text-sm">
+          Note: Modifying the settings file externally will not update it
+          in-launcher.
+        </p>
       </div>
     </div>
   );
