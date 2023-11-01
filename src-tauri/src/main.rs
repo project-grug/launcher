@@ -46,9 +46,23 @@ async fn open_settings_folder_command() -> Result<(), String> {
   let _ = open(get_base_dir()).map_err(| err | err.to_string());
   Ok(())
 }
+#[tauri::command]
+async fn open_auth_window_command(app: tauri::AppHandle) -> Result<(), String> {
+  let auth_window = tauri::WindowBuilder::new(&app, 
+    "auth", 
+    tauri::WindowUrl::External("https://cityrp.jpxs.io/auth/login".parse().unwrap())
+  ).title("Login")
+  .resizable(false)
+  .maximizable(false)
+  .center()
+  .always_on_top(true)
+  .build()
+  .expect("failed to make window");
+  auth_window.show().map_err(| err | err.to_string())
+}
 fn main() {
   tauri::Builder::default()
-    .invoke_handler(tauri::generate_handler![save_settings_command, get_settings_command, open_settings_command, open_settings_folder_command])
+    .invoke_handler(tauri::generate_handler![save_settings_command, get_settings_command, open_settings_command, open_settings_folder_command, open_auth_window_command])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");
 }

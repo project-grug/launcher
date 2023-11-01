@@ -1,3 +1,4 @@
+import { invoke } from "@tauri-apps/api";
 import { createResource, onCleanup } from "solid-js";
 
 function ServerStatus(props: { ip: string; name: string }) {
@@ -32,7 +33,7 @@ export default function () {
   return (
     <div class="pt-8">
       <div class="text-center">
-        <h1 class="text-2xl tracking-wider font-bold pb-4">Launcher</h1>
+        <h1 class="text-2xl tracking-wider font-bold pb-4">Project Greg</h1>
         <section>
           less infomration i guess
           {/* Server Status Section */}
@@ -47,7 +48,11 @@ export default function () {
             ></ServerStatus>
             <ServerStatus ip="https://jpxs.io/" name="website"></ServerStatus>
           </div>
-          <div> thing</div>
+          <div>
+            <button onClick={() => invoke("open_auth_window_command")}>
+              auth here
+            </button>
+          </div>
         </section>
       </div>
     </div>
