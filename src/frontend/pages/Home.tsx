@@ -5,8 +5,8 @@ function ServerStatus(props: { ip: string; name: string }) {
   const [status, { refetch }] = createResource(async () => {
     try {
       const response = await fetch(props.ip);
-      if (response.status === 404) {
-        console.log("404, is down.");
+      if (response.status >= 400 && response.status < 500) {
+        console.log("400 range status, is down.");
         return false;
       }
       return true;
@@ -39,7 +39,7 @@ export default function () {
           {/* Server Status Section */}
           <div class="rounded-xl absolute right-0 mr-12 bg-crust">
             <ServerStatus
-              ip="https://cityrp.jpxs.io/api"
+              ip="https://cityrp.jpxs.io/api/status"
               name="grug api"
             ></ServerStatus>
             <ServerStatus
