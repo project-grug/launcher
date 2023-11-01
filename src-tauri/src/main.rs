@@ -3,12 +3,18 @@
 
 use opener::open;
 use std::path::PathBuf;
+use tokio::time::{sleep, Duration};
 use std::fs;
 mod settings;
 use settings::{save_settings, get_settings_path};
 
 use crate::settings::{Settings, get_settings};
-
+struct AuthData {
+  username: Option<String>,
+  steam_id: Option<String>,
+  profile_url: Option<String>,
+  avatar: Option<String>,
+}
 #[cfg(target_os = "windows")]
 const HOMEDIR: &str = "APPDATA";
 
@@ -29,8 +35,7 @@ fn get_base_dir() -> PathBuf {
 // Custom Commands
 #[tauri::command]
 async fn get_settings_command() -> Result<Settings, String> {
-  let settings = get_settings().map_err(| err | err.to_string() );
-  Ok(settings.unwrap())
+  get_settings().map_err(| err | err.to_string())
 }
 #[tauri::command]
 async fn save_settings_command(data: Settings) -> Result<(), String> {
@@ -38,16 +43,15 @@ async fn save_settings_command(data: Settings) -> Result<(), String> {
 }
 #[tauri::command]
 async fn open_settings_command() -> Result<(), String> {
-  let _ = open(get_settings_path()).map_err(| err | err.to_string());
-  Ok(())
+  open(get_settings_path()).map_err(| err | err.to_string())
 }
 #[tauri::command]
 async fn open_settings_folder_command() -> Result<(), String> {
-  let _ = open(get_base_dir()).map_err(| err | err.to_string());
-  Ok(())
+  open(get_base_dir()).map_err(| err | err.to_string())
 }
 #[tauri::command]
 async fn open_auth_window_command(app: tauri::AppHandle) -> Result<(), String> {
+  // Open window
   let auth_window = tauri::WindowBuilder::new(&app, 
     "auth", 
     tauri::WindowUrl::External("https://cityrp.jpxs.io/auth/login".parse().unwrap())
@@ -56,11 +60,52 @@ async fn open_auth_window_command(app: tauri::AppHandle) -> Result<(), String> {
   .maximizable(false)
   .center()
   .always_on_top(true)
+  .closable(true)
   .build()
   .expect("failed to make window");
-  auth_window.show().map_err(| err | err.to_string())
+  let result = auth_window.show().map_err(| err | err.to_string());
+  if result.is_err() {
+    return Err(result.unwrap_err().to_string());
+  }
+  // Get response
+  let mut response: Option<AuthData> = None;
+  while response.is_none() {
+    sleep(Duration::from_secs(2)).await;
+    let url = auth_window.url();
+    let domain = url.domain();
+    if domain.unwrap() == "cityrp.jpxs.io" && url.path() == "/auth/data"{
+      let query = url.query_pairs();
+      let iter = query.into_iter();
+      let mut authdata = AuthData{
+        username: None,
+        steam_id: None,
+        profile_url: None,
+        avatar: None,
+      };
+      // constructing AuthData from query arguments
+      for arg in iter {
+        println!("arg0: {}, arg1: {}", arg.0, arg.1);
+        if arg.0 == "username" {
+          authdata.username = Some(arg.1.to_string());
+        } else if arg.0 == "steamId" {
+          authdata.steam_id = Some(arg.1.to_string());
+        } else if arg.0 == "profileUrl" {
+          authdata.profile_url = Some(arg.1.to_string());
+        } else if arg.0 == "avatar" {
+          authdata.avatar = Some(arg.1.to_string());
+        }
+      }
+      response = Some(authdata);
+    }
+  }
+  println!("found response! closing window.");
+  let _ = auth_window.close().expect("could not close window");
+  // to-do: do something with the auth data
+  Ok(())
 }
-fn main() {
+
+#[tokio::main]
+async fn main() {
   tauri::Builder::default()
     .invoke_handler(tauri::generate_handler![save_settings_command, get_settings_command, open_settings_command, open_settings_folder_command, open_auth_window_command])
     .run(tauri::generate_context!())
