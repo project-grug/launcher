@@ -19,9 +19,9 @@ const HOMEDIR: &str = "HOME";
 fn get_base_dir() -> PathBuf {
     let home = PathBuf::from(std::env::var(HOMEDIR).unwrap());
     #[cfg(debug_assertions)]
-    let jpxs_folder_name = "dev_jpxs_launcher";
+    let jpxs_folder_name = ".dev_jpxs_launcher";
     #[cfg(not(debug_assertions))]
-    let jpxs_folder_name = "jpxs_launcher";
+    let jpxs_folder_name = ".jpxs_launcher";
     #[cfg(any(target_os = "windows", target_os = "linux"))]
     let base_dir = home.join(jpxs_folder_name);
     #[cfg(target_os = "macos")]

@@ -1,6 +1,5 @@
-import { invoke } from "@tauri-apps/api";
 import { createResource, onCleanup } from "solid-js";
-import { grugApiUrl, jpxsApiUrl, settingsManager } from "../..";
+import { grugApiUrl, jpxsApiUrl } from "../..";
 
 function ServerStatus(props: { ip: string; name: string }) {
   const [status, { refetch }] = createResource(async () => {
