@@ -59,6 +59,7 @@ export default function () {
           onClick={() => {
             setActiveButton(9);
           }}
+          class="pl-4"
         >
           <Player name="morbius" phone="3190880"></Player>
         </A>

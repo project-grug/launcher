@@ -11,8 +11,8 @@ pub enum Theme {
 }
 #[derive(Serialize, Deserialize)]
 pub struct Account {
-    name: String,
-    phone_number: String,
+    pub name: String,
+    pub phone_number: String,
 }
 #[derive(Serialize, Deserialize)]
 pub struct Settings {

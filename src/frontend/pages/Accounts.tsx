@@ -34,11 +34,12 @@ export default function () {
           <Show
             when={steamAccount()}
             fallback={
-              <p>
+              <div>
                 You do not have a linked steam account, do you want to link one
                 now?
                 <button
                   onClick={async () => {
+                    console.log("invoking");
                     await invoke("open_auth_window_command");
                     const newSettings = await settingsManager.getSettings(true);
                     setSteamAccount(newSettings.steam_account);
@@ -47,7 +48,7 @@ export default function () {
                 >
                   Click here to link your account
                 </button>
-              </p>
+              </div>
             }
           >
             <div>
@@ -60,6 +61,7 @@ export default function () {
               ></SteamAccount>
             </div>
           </Show>
+          <h4 class="text-xs font-bold pt-4">Sub Rosa Accounts</h4>
           <For each={accounts()}>
             {(account) => {
               return (
@@ -70,6 +72,14 @@ export default function () {
               );
             }}
           </For>
+          <button
+            class="bg-base py-1 px-2 rounded-xl mt-4"
+            onClick={() => {
+              // to-do: add account functionality
+            }}
+          >
+            Add Account
+          </button>
         </div>
       </section>
     </div>

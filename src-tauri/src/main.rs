@@ -5,7 +5,7 @@ use opener::open;
 use std::path::PathBuf;
 use std::fs;
 mod auth;
-use auth::{create_auth_window, wait_for_auth_info};
+use auth::{create_auth_window, wait_for_auth_info, get_subrosa_account_from_steam};
 mod settings;
 use settings::{save_settings, get_settings_path};
 
@@ -55,15 +55,16 @@ async fn open_auth_window_command(app: tauri::AppHandle) -> Result<(), String> {
   let auth_window = create_auth_window(app).map_err(| err | err.to_string()).unwrap();
   let _ = auth_window.show().map_err(| err | err.to_string()).unwrap();
   // Get response
-  let auth_data = wait_for_auth_info(&auth_window).await;
+  let auth_data = wait_for_auth_info(&auth_window).await.unwrap();
   println!("found response! closing window.");
   let _ = auth_window.close().expect("could not close window");
-  // to-do: do something with the auth data
-  let old_settings = get_settings().unwrap();
+  let account = get_subrosa_account_from_steam(&auth_data).await.unwrap();
+  let mut old_settings = get_settings().unwrap();
+  old_settings.sub_rosa_accounts.push(account);
   let new_settings = Settings{
     sub_rosa_accounts: old_settings.sub_rosa_accounts,
     theme: old_settings.theme,
-    steam_account: auth_data
+    steam_account: Some(auth_data)
   };
   let _ = save_settings(new_settings).expect("failed to save settings");
   Ok(())

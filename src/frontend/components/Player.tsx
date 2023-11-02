@@ -3,7 +3,7 @@ import { grugApiUrl } from "../..";
 export default function (props: { name: string; phone: string }) {
   // To-Do: Fetch player preview image from server using phone number
   return (
-    <div class="pl-4 flex flex-row">
+    <div class="flex flex-row">
       <img
         alt="Player Preview"
         src={`${grugApiUrl}/avatar/thumbnail?i=${props.phone}`}

@@ -1,6 +1,23 @@
+use reqwest::Error;
 use tokio::time::{sleep, Duration};
 use serde::{Deserialize, Serialize};
 
+use crate::settings::Account;
+
+#[derive(Serialize, Deserialize)]
+#[allow(non_snake_case)]
+pub struct Player {
+  pub name: String,
+  pub gameId: i32,
+  pub phoneNumber: i32,
+  pub steamId: String
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct SuccessResponse {
+  success: bool,
+  players: Vec<Player>,
+}
 #[derive(Serialize, Deserialize)]
 pub struct SteamAccount {
   pub username: Option<String>,
@@ -59,4 +76,15 @@ pub async fn wait_for_auth_info(window: &tauri::Window) -> Option<SteamAccount> 
       }
     }
     return response;
+}
+pub async fn get_subrosa_account_from_steam(account: &SteamAccount) -> Result<Account, Error> {
+  let mut url = "https://jpxs.io/api/player/".to_owned();
+  url.push_str(account.steam_id.as_ref().unwrap().as_str());
+  let resp = reqwest::get(url).await?.json::<SuccessResponse>().await?;
+  let player = resp.players.get(0).unwrap();
+  let account = Account{
+    name: player.name.to_owned(),
+    phone_number: player.phoneNumber.to_string(),
+  };
+  return Ok(account);
 }
