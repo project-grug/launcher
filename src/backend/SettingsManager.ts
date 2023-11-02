@@ -8,17 +8,17 @@ enum Theme {
 }
 type SteamAccount = {
   username: string;
-  steamId: string;
-  profileUrl: string;
+  steam_id: string;
+  profile_url: string;
   avatar: string;
 };
 type Account = {
   name: string;
-  phoneNumber: string;
+  phone_number: string;
 };
 interface Settings {
-  subRosaAccounts: Account[];
-  steamAccount?: SteamAccount;
+  sub_rosa_accounts: Account[];
+  steam_account?: SteamAccount;
   theme: Theme;
 }
 class SettingsManager {
@@ -26,7 +26,7 @@ class SettingsManager {
   constructor(settings?: Settings) {
     this.setSettings(
       settings || {
-        subRosaAccounts: [],
+        sub_rosa_accounts: [],
         theme: Theme.System,
       }
     );
@@ -76,11 +76,17 @@ class SettingsManager {
       invoke("open_settings_command");
     }
   }
+  getSteamAccount() {
+    return this.settings.steam_account;
+  }
+  getAccounts() {
+    return this.settings.sub_rosa_accounts;
+  }
   addAccount(account: Account) {
-    this.settings.subRosaAccounts.push(account);
+    this.settings.sub_rosa_accounts.push(account);
   }
   removeAccount(account: Account) {
-    this.settings.subRosaAccounts = this.settings.subRosaAccounts.filter(
+    this.settings.sub_rosa_accounts = this.settings.sub_rosa_accounts.filter(
       (item) => item !== account
     );
   }

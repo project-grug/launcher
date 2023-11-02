@@ -1,6 +1,6 @@
 import Server from "../components/Server";
 import { For, Suspense, createResource, onCleanup } from "solid-js";
-import { apiUrl } from "../..";
+import { jpxsApiUrl } from "../..";
 type server = {
   id: number;
   name: string;
@@ -17,7 +17,7 @@ type server = {
 };
 const [servers, { refetch }] = createResource(async () => {
   console.log("fetched servers");
-  const serverList = await (await fetch(`${apiUrl}/servers`)).json();
+  const serverList = await (await fetch(`${jpxsApiUrl}/servers`)).json();
   serverList.sort((a: server, b: server) => {
     return a.players > b.players ? -1 : 1;
   });

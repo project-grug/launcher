@@ -1,4 +1,5 @@
 import { createSignal, onCleanup } from "solid-js";
+import { A } from "@solidjs/router";
 import { settingsManager } from "../..";
 import { Theme } from "../../backend/SettingsManager";
 export default function () {
@@ -37,7 +38,18 @@ export default function () {
           </option>
         </select>
       </section>
-      <div class="text-left my-4">
+      <section class="text-left text-subtext1">
+        <h2 class="text-xl font-bold tracking-wider my-4 text-text">
+          <span class="text-2xl pr-1">·</span>Accounts
+        </h2>
+        <A href="/accounts" class="my-1 py-2 px-4 bg-crust rounded-xl">
+          Open Accounts
+        </A>
+      </section>
+      <section class="text-left my-4">
+        <h2 class="text-xl font-bold tracking-wider my-4 text-text">
+          <span class="text-2xl pr-1">·</span>Misc
+        </h2>
         <button
           class="my-1 py-1 px-4 bg-crust rounded-xl block"
           onClick={() => settingsManager.openSettings(false)}
@@ -58,9 +70,9 @@ export default function () {
         </button>
         <p class="text-subtext0 text-sm">
           Note: Modifying the settings file externally will not update it
-          in-launcher.
+          in-launcher. Restart the launcher in that case.
         </p>
-      </div>
+      </section>
     </div>
   );
 }

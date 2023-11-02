@@ -1,8 +1,14 @@
+import { grugApiUrl } from "../..";
+
 export default function (props: { name: string; phone: string }) {
   // To-Do: Fetch player preview image from server using phone number
   return (
-    <div class="flex flex-row">
-      <img alt="Player Preview"></img>
+    <div class="pl-4 flex flex-row">
+      <img
+        alt="Player Preview"
+        src={`${grugApiUrl}/avatar/thumbnail?i=${props.phone}`}
+        class="w-16 h-16"
+      ></img>
       <div class="flex flex-col mx-2">
         <p class="font-bold text-xl">{props.name}</p>{" "}
         <p class="text-overlay2">{props.phone}</p>

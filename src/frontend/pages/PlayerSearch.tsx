@@ -1,5 +1,5 @@
 import { createSignal, Show, onCleanup } from "solid-js";
-import { apiUrl } from "../..";
+import { jpxsApiUrl } from "../..";
 type player = {
   name: string;
   gameId: number;
@@ -118,7 +118,7 @@ export default function () {
                 const valEncoded = encodeURIComponent(val);
                 setInputText(decodeURIComponent(val));
 
-                fetch(`${apiUrl}/player/${valEncoded}`).then(function (
+                fetch(`${jpxsApiUrl}/player/${valEncoded}`).then(function (
                   response
                 ) {
                   response.json().then(function (json: response) {

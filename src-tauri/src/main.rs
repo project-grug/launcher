@@ -18,10 +18,14 @@ const HOMEDIR: &str = "APPDATA";
 const HOMEDIR: &str = "HOME";
 fn get_base_dir() -> PathBuf {
     let home = PathBuf::from(std::env::var(HOMEDIR).unwrap());
+    #[cfg(debug_assertions)]
+    let jpxs_folder_name = "dev_jpxs_launcher";
+    #[cfg(not(debug_assertions))]
+    let jpxs_folder_name = "jpxs_launcher";
     #[cfg(any(target_os = "windows", target_os = "linux"))]
-    let base_dir = home.join(".jpxs_launcher");
+    let base_dir = home.join(jpxs_folder_name);
     #[cfg(target_os = "macos")]
-    let base_dir = home.join("Library").join("Application Support").join("jpxs_launcher");
+    let base_dir = home.join("Library").join("Application Support").join(jpxs_folder_name);
     if !base_dir.exists() {
       fs::create_dir(&base_dir).expect("Could not create base directory");
     }

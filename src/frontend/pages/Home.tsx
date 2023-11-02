@@ -1,6 +1,6 @@
 import { invoke } from "@tauri-apps/api";
 import { createResource, onCleanup } from "solid-js";
-import { settingsManager } from "../..";
+import { grugApiUrl, jpxsApiUrl, settingsManager } from "../..";
 
 function ServerStatus(props: { ip: string; name: string }) {
   const [status, { refetch }] = createResource(async () => {
@@ -40,24 +40,11 @@ export default function () {
           {/* Server Status Section */}
           <div class="rounded-xl absolute right-0 mr-12 bg-crust">
             <ServerStatus
-              ip="https://cityrp.jpxs.io/api/status"
+              ip={`${grugApiUrl}/status`}
               name="grug api"
             ></ServerStatus>
-            <ServerStatus
-              ip="https://jpxs.io/api"
-              name="jpxs api"
-            ></ServerStatus>
+            <ServerStatus ip={jpxsApiUrl} name="jpxs api"></ServerStatus>
             <ServerStatus ip="https://jpxs.io/" name="website"></ServerStatus>
-          </div>
-          <div>
-            <button
-              onClick={async () => {
-                await invoke("open_auth_window_command");
-                settingsManager.getSettings(true);
-              }}
-            >
-              auth here
-            </button>
           </div>
         </section>
       </div>
