@@ -1,10 +1,12 @@
 use tokio::time::{sleep, Duration};
+use serde::{Deserialize, Serialize};
 
-pub struct AuthData {
-    username: Option<String>,
-    steam_id: Option<String>,
-    profile_url: Option<String>,
-    avatar: Option<String>,
+#[derive(Serialize, Deserialize)]
+pub struct SteamAccount {
+  pub username: Option<String>,
+  pub steam_id: Option<String>,
+  pub profile_url: Option<String>,
+  pub avatar: Option<String>,
 }
 pub fn create_auth_window(app: tauri::AppHandle) -> Result<tauri::Window, tauri::Error> {
   // Open window
@@ -25,8 +27,8 @@ pub fn create_auth_window(app: tauri::AppHandle) -> Result<tauri::Window, tauri:
   }
   return Ok(auth_window);
 }
-pub async fn wait_for_auth_info(window: &tauri::Window) -> Option<AuthData> {
-    let mut response: Option<AuthData> = None;
+pub async fn wait_for_auth_info(window: &tauri::Window) -> Option<SteamAccount> {
+    let mut response: Option<SteamAccount> = None;
     while response.is_none() {
       sleep(Duration::from_secs(2)).await;
       let url = window.url();
@@ -34,7 +36,7 @@ pub async fn wait_for_auth_info(window: &tauri::Window) -> Option<AuthData> {
       if domain.unwrap() == "cityrp.jpxs.io" && url.path() == "/auth/data"{
         let query = url.query_pairs();
         let iter = query.into_iter();
-        let mut authdata = AuthData{
+        let mut account = SteamAccount{
           username: None,
           steam_id: None,
           profile_url: None,
@@ -44,16 +46,16 @@ pub async fn wait_for_auth_info(window: &tauri::Window) -> Option<AuthData> {
         for arg in iter {
           println!("arg0: {}, arg1: {}", arg.0, arg.1);
           if arg.0 == "username" {
-            authdata.username = Some(arg.1.to_string());
+            account.username = Some(arg.1.to_string());
           } else if arg.0 == "steamId" {
-            authdata.steam_id = Some(arg.1.to_string());
+            account.steam_id = Some(arg.1.to_string());
           } else if arg.0 == "profileUrl" {
-            authdata.profile_url = Some(arg.1.to_string());
+            account.profile_url = Some(arg.1.to_string());
           } else if arg.0 == "avatar" {
-            authdata.avatar = Some(arg.1.to_string());
+            account.avatar = Some(arg.1.to_string());
           }
         }
-        response = Some(authdata);
+        response = Some(account);
       }
     }
     return response;

@@ -1,6 +1,7 @@
 use std::path::{Path, PathBuf};
 use std::fs;
 use serde::{Deserialize, Serialize};
+use crate::auth::SteamAccount;
 use crate::get_base_dir;
 #[derive(Serialize, Deserialize)]
 pub enum Theme {
@@ -15,15 +16,17 @@ pub struct Account {
 }
 #[derive(Serialize, Deserialize)]
 pub struct Settings {
-    theme: Theme,
-    accounts: Vec<Account>,
+    pub theme: Theme,
+    pub sub_rosa_accounts: Vec<Account>,
+    pub steam_account: Option<SteamAccount>,
 }
 pub fn check_config_exists(path: &PathBuf) -> Result<(), std::io::Error> {
     if !Path::exists(path) {
       let accounts: Vec<Account> = vec![];
       let settings = Settings {
         theme: Theme::System,
-        accounts: accounts,
+        sub_rosa_accounts: accounts,
+        steam_account: None,
       };
       save_settings(settings)
     } else {

@@ -6,12 +6,19 @@ enum Theme {
   Light = "Light",
   System = "System",
 }
+type SteamAccount = {
+  username: string;
+  steamId: string;
+  profileUrl: string;
+  avatar: string;
+};
 type Account = {
   name: string;
   phoneNumber: string;
 };
 interface Settings {
-  accounts: Account[];
+  subRosaAccounts: Account[];
+  steamAccount?: SteamAccount;
   theme: Theme;
 }
 class SettingsManager {
@@ -19,13 +26,32 @@ class SettingsManager {
   constructor(settings?: Settings) {
     this.setSettings(
       settings || {
-        accounts: [],
+        subRosaAccounts: [],
         theme: Theme.System,
       }
     );
   }
-  getSettings() {
-    return this.settings;
+  /**
+   * Gets the settings object stored in the settings manager
+   * @param forceReload Whether to ignore cache and re-read from filesystem
+   * @returns Settings
+   */
+  async getSettings(forceReload?: boolean) {
+    if (forceReload) {
+      return new Promise<Settings>((resolve, reject) => {
+        invoke("get_settings_command").then(
+          (data) => {
+            const settings = data as Settings;
+            console.log(settings);
+            this.setSettings(settings);
+            resolve(this.settings);
+          },
+          (reason) => reject(reason)
+        );
+      });
+    } else {
+      return this.settings;
+    }
   }
   async getSystemTheme() {
     return await appWindow.theme();
@@ -51,10 +77,10 @@ class SettingsManager {
     }
   }
   addAccount(account: Account) {
-    this.settings.accounts.push(account);
+    this.settings.subRosaAccounts.push(account);
   }
   removeAccount(account: Account) {
-    this.settings.accounts = this.settings.accounts.filter(
+    this.settings.subRosaAccounts = this.settings.subRosaAccounts.filter(
       (item) => item !== account
     );
   }

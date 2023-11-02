@@ -1,5 +1,6 @@
 import { invoke } from "@tauri-apps/api";
 import { createResource, onCleanup } from "solid-js";
+import { settingsManager } from "../..";
 
 function ServerStatus(props: { ip: string; name: string }) {
   const [status, { refetch }] = createResource(async () => {
@@ -49,7 +50,12 @@ export default function () {
             <ServerStatus ip="https://jpxs.io/" name="website"></ServerStatus>
           </div>
           <div>
-            <button onClick={() => invoke("open_auth_window_command")}>
+            <button
+              onClick={async () => {
+                await invoke("open_auth_window_command");
+                settingsManager.getSettings(true);
+              }}
+            >
               auth here
             </button>
           </div>

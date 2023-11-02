@@ -49,12 +49,19 @@ async fn open_settings_folder_command() -> Result<(), String> {
 async fn open_auth_window_command(app: tauri::AppHandle) -> Result<(), String> {
   // Open window
   let auth_window = create_auth_window(app).map_err(| err | err.to_string()).unwrap();
-  let result = auth_window.show().map_err(| err | err.to_string()).unwrap();
+  let _ = auth_window.show().map_err(| err | err.to_string()).unwrap();
   // Get response
   let auth_data = wait_for_auth_info(&auth_window).await;
   println!("found response! closing window.");
   let _ = auth_window.close().expect("could not close window");
   // to-do: do something with the auth data
+  let old_settings = get_settings().unwrap();
+  let new_settings = Settings{
+    sub_rosa_accounts: old_settings.sub_rosa_accounts,
+    theme: old_settings.theme,
+    steam_account: auth_data
+  };
+  let _ = save_settings(new_settings).expect("failed to save settings");
   Ok(())
 }
 
