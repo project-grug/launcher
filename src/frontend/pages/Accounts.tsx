@@ -1,5 +1,6 @@
 import { invoke } from "@tauri-apps/api";
-import { For, Show, createSignal } from "solid-js";
+import { For, Show, batch, createSignal, onCleanup } from "solid-js";
+import { createStore } from "solid-js/store";
 import { settingsManager } from "../..";
 import Player from "../components/Player";
 function SteamAccount(props: {
@@ -22,7 +23,8 @@ export default function () {
   const [steamAccount, setSteamAccount] = createSignal(
     settingsManager.getSteamAccount()
   );
-  const [accounts, setAccounts] = createSignal(settingsManager.getAccounts());
+  const [accounts, setAccounts] = createStore(settingsManager.getAccounts());
+  onCleanup(() => settingsManager.saveSettings());
   return (
     <div class="pt-8">
       <h1 class="text-center text-2xl tracking-wider font-bold pb-4">
@@ -38,12 +40,15 @@ export default function () {
                 You do not have a linked steam account, do you want to link one
                 now?
                 <button
+                  class="bg-base rounded-xl py-1 px-2"
                   onClick={async () => {
                     console.log("invoking");
                     await invoke("open_auth_window_command");
                     const newSettings = await settingsManager.getSettings(true);
-                    setSteamAccount(newSettings.steam_account);
-                    setAccounts(newSettings.sub_rosa_accounts);
+                    batch(() => {
+                      setSteamAccount(newSettings.steam_account);
+                      setAccounts(newSettings.sub_rosa_accounts);
+                    });
                   }}
                 >
                   Click here to link your account
@@ -60,26 +65,36 @@ export default function () {
                 url={steamAccount()!.profile_url}
               ></SteamAccount>
             </div>
+            <h4 class="text-xs font-bold pt-4">Sub Rosa Accounts</h4>
+            <For each={accounts}>
+              {(account) => {
+                return (
+                  <Player
+                    name={account.name}
+                    phone={account.phone_number}
+                    mainAccount={account.main_account}
+                    activeAccount={account.active_account}
+                    editProperties={true}
+                    editCallback={() => {
+                      settingsManager.setAccountActive(account);
+                      const newAccounts = settingsManager.getAccounts();
+                      console.log(newAccounts);
+                      // why is this not updating?
+                      setAccounts(newAccounts);
+                    }}
+                  ></Player>
+                );
+              }}
+            </For>
+            <button
+              class="bg-base py-1 px-2 rounded-xl mt-4"
+              onClick={() => {
+                // to-do: add account functionality
+              }}
+            >
+              Add Account
+            </button>
           </Show>
-          <h4 class="text-xs font-bold pt-4">Sub Rosa Accounts</h4>
-          <For each={accounts()}>
-            {(account) => {
-              return (
-                <Player
-                  name={account.name}
-                  phone={account.phone_number}
-                ></Player>
-              );
-            }}
-          </For>
-          <button
-            class="bg-base py-1 px-2 rounded-xl mt-4"
-            onClick={() => {
-              // to-do: add account functionality
-            }}
-          >
-            Add Account
-          </button>
         </div>
       </section>
     </div>

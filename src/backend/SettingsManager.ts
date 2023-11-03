@@ -15,6 +15,8 @@ type SteamAccount = {
 type Account = {
   name: string;
   phone_number: string;
+  main_account: boolean;
+  active_account: boolean;
 };
 interface Settings {
   sub_rosa_accounts: Account[];
@@ -89,6 +91,19 @@ class SettingsManager {
     this.settings.sub_rosa_accounts = this.settings.sub_rosa_accounts.filter(
       (item) => item !== account
     );
+  }
+  setAccountActive(account: Account) {
+    // janky but works, though this does mean you can't have
+    // two accounts with the same name, this shouldn't be allowed
+    // anyway so it doesn't matter.
+    this.settings.sub_rosa_accounts.find((foundAccount, index) => {
+      if (foundAccount.name === account.name) {
+        this.settings.sub_rosa_accounts[index].active_account = true;
+        console.log("set account active");
+        return true;
+      }
+    });
+    account.active_account = true;
   }
   getTheme() {
     return this.settings.theme;

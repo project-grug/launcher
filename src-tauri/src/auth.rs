@@ -85,6 +85,8 @@ pub async fn get_subrosa_account_from_steam(account: &SteamAccount) -> Result<Ac
   let account = Account{
     name: player.name.to_owned(),
     phone_number: player.phoneNumber.to_string(),
+    main_account: true,
+    active_account: true,
   };
   return Ok(account);
 }
