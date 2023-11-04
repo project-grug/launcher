@@ -1,8 +1,60 @@
 import { invoke } from "@tauri-apps/api";
 import { For, Show, batch, createSignal, onCleanup } from "solid-js";
-import { createStore } from "solid-js/store";
 import { settingsManager } from "../..";
-import Player from "../components/Player";
+import { grugApiUrl } from "../..";
+
+export function Player(props: {
+  name: string;
+  phone: string;
+  activeAccount?: boolean;
+  mainAccount?: boolean;
+  editProperties?: boolean;
+  editCallback?: () => void;
+}) {
+  // To-Do: Fetch player preview image from server using phone number
+  return (
+    <div class={`flex flex-row ${props.activeAccount ? "bg-surface0" : ""} `}>
+      <img
+        alt="Player Preview"
+        src={`${grugApiUrl}/avatar/thumbnail?i=${props.phone}`}
+        class="w-16 h-16"
+      ></img>
+      <div class="flex flex-col mx-2">
+        <p class="font-bold text-xl">{props.name}</p>{" "}
+        <p class="text-overlay2">{props.phone}</p>
+      </div>
+      <Show
+        when={props.activeAccount || props.mainAccount || props.editProperties}
+      >
+        <Show when={props.activeAccount || props.mainAccount}>
+          <div class="flex flex-col text-xs">
+            Details:
+            <Show when={props.mainAccount}>
+              <p>Main Account</p>
+            </Show>
+            <Show when={props.activeAccount}>
+              <p>Active Account</p>
+            </Show>
+          </div>
+        </Show>
+        <Show when={props.editProperties && props.activeAccount !== true}>
+          <div class="grid grid-row-3 mx-2">
+            {/* This is disgusting, but it works... */}
+            <div></div>
+            <button
+              class="bg-base px-2 rounded-xl"
+              onClick={props.editCallback}
+            >
+              Set Active
+            </button>
+            <div></div>
+          </div>
+        </Show>
+      </Show>
+    </div>
+  );
+}
+
 function SteamAccount(props: {
   image: string;
   username: string;
@@ -23,7 +75,37 @@ export default function () {
   const [steamAccount, setSteamAccount] = createSignal(
     settingsManager.getSteamAccount()
   );
-  const [accounts, setAccounts] = createStore(settingsManager.getAccounts());
+  const [accounts, setAccounts] = createSignal(settingsManager.getAccounts(), {
+    /*
+    equals: (prev, next) => {
+      return false;
+      // when return false: update, when return true: not update.
+      console.log(prev);
+      console.log(next);
+      let isEqual = true;
+      if (prev.length !== next.length) {
+        console.log("different length");
+        isEqual = false;
+      }
+      prev.forEach((account, index) => {
+        const newAccount = next[index];
+        console.log(account);
+        console.log(newAccount);
+        if (
+          account.active_account !== newAccount.active_account ||
+          account.main_account !== newAccount.main_account ||
+          account.name !== newAccount.name ||
+          account.phone_number !== newAccount.phone_number
+        ) {
+          console.log("account has discrepancies");
+          isEqual = false;
+        }
+      });
+      console.log("Updating? " + !isEqual);
+      return isEqual;
+    },
+    */
+  });
   onCleanup(() => settingsManager.saveSettings());
   return (
     <div class="pt-8">
@@ -66,7 +148,7 @@ export default function () {
               ></SteamAccount>
             </div>
             <h4 class="text-xs font-bold pt-4">Sub Rosa Accounts</h4>
-            <For each={accounts}>
+            <For each={accounts()}>
               {(account) => {
                 return (
                   <Player
@@ -75,12 +157,19 @@ export default function () {
                     mainAccount={account.main_account}
                     activeAccount={account.active_account}
                     editProperties={true}
-                    editCallback={() => {
+                    editCallback={async () => {
                       settingsManager.setAccountActive(account);
-                      const newAccounts = settingsManager.getAccounts();
-                      console.log(newAccounts);
-                      // why is this not updating?
-                      setAccounts(newAccounts);
+                      const settings = await settingsManager.getSettings();
+                      console.log(settings);
+                      setAccounts(settings.sub_rosa_accounts);
+                      await settingsManager.saveSettings();
+                      // what have i brought upon this cursed land
+                      // i have a solid reason for this:
+                      // i don't know why, but things were not updating
+                      // when i used setAccounts, so this is a workaround
+                      // that just reloads the page so it grabs the
+                      // accounts again...
+                      location.reload();
                     }}
                   ></Player>
                 );

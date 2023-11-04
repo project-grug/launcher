@@ -1,8 +1,9 @@
-import { createSignal } from "solid-js";
+import { Show, createSignal } from "solid-js";
 import Player from "./Player";
 import { A } from "@solidjs/router";
 import { Icon } from "solid-heroicons";
 import { cog } from "solid-heroicons/solid";
+import { settingsManager } from "../..";
 function getIsButtonActive(buttonIndex: number, activeButton: number) {
   return buttonIndex === activeButton;
 }
@@ -28,6 +29,13 @@ function SidebarButton(props: {
 
 export default function () {
   const [activeButton, setActiveButton] = createSignal(0);
+  const [activeAccount, setActiveAccount] = createSignal(
+    settingsManager.getActiveAccount()
+  );
+  settingsManager.addAccountActiveCallback((account) =>
+    setActiveAccount(account)
+  );
+  console.log(activeAccount());
   return (
     <div class="h-screen max-h-full flex fixed top-0 flex-col w-64 gap-y-4 bg-mantle">
       <h1 class="text-xl font-bold tracking-wider mx-4 mt-4">Project Greg</h1>
@@ -61,7 +69,20 @@ export default function () {
           }}
           class="pl-4"
         >
-          <Player name="morbius" phone="3190880"></Player>
+          <Show
+            when={activeAccount()}
+            fallback={
+              <div class="text-sm">
+                <p>You don't have an active account.</p>
+                <p>Click here to select one.</p>
+              </div>
+            }
+          >
+            <Player
+              name={activeAccount()!.name}
+              phone={activeAccount()!.phone_number}
+            ></Player>
+          </Show>
         </A>
         {/* To-Do: Settings Page */}
         <A

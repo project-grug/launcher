@@ -24,6 +24,7 @@ interface Settings {
   theme: Theme;
 }
 class SettingsManager {
+  private activeAccountChangeCallbacks: Array<(account: Account) => void> = [];
   private settings!: Settings;
   constructor(settings?: Settings) {
     this.setSettings(
@@ -59,12 +60,16 @@ class SettingsManager {
     return await appWindow.theme();
   }
   saveSettings() {
-    invoke("save_settings_command", { data: this.settings });
+    return invoke("save_settings_command", { data: this.settings });
   }
   setSettings(settings: Settings) {
     this.settings = settings;
     // update the current theme to match the saved theme
     document.body.classList.remove("mocha");
+    const activeAccount = this.getActiveAccount();
+    if (activeAccount) {
+      this.setAccountActive(activeAccount);
+    }
     this.setTheme(this.settings.theme);
   }
   /**
@@ -92,18 +97,38 @@ class SettingsManager {
       (item) => item !== account
     );
   }
+  getActiveAccount() {
+    return this.settings.sub_rosa_accounts.find((acc) => {
+      console.log(acc);
+      if (acc.active_account) {
+        console.log("found active account of name " + acc.name);
+        return true;
+      }
+    });
+  }
   setAccountActive(account: Account) {
     // janky but works, though this does mean you can't have
     // two accounts with the same name, this shouldn't be allowed
     // anyway so it doesn't matter.
-    this.settings.sub_rosa_accounts.find((foundAccount, index) => {
-      if (foundAccount.name === account.name) {
-        this.settings.sub_rosa_accounts[index].active_account = true;
-        console.log("set account active");
-        return true;
+    console.log(account);
+    this.settings.sub_rosa_accounts.forEach((acc) => {
+      if (account.name === acc.name) {
+        acc.active_account = true;
+        this.activeAccountChangeCallbacks.forEach((fn) => {
+          fn(acc);
+        });
+      } else {
+        acc.active_account = false;
       }
     });
-    account.active_account = true;
+  }
+  /**
+   *
+   * @param fn Callback
+   * @returns The ID of this callback
+   */
+  addAccountActiveCallback(fn: (account: Account) => void) {
+    return this.activeAccountChangeCallbacks.push(fn);
   }
   getTheme() {
     return this.settings.theme;
