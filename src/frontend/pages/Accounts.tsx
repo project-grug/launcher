@@ -1,60 +1,7 @@
 import { invoke } from "@tauri-apps/api";
 import { For, Show, batch, createSignal, onCleanup } from "solid-js";
-import { settingsManager } from "../..";
-import { grugApiUrl } from "../..";
-
-export function Player(props: {
-  name: string;
-  phone: string;
-  activeAccount?: boolean;
-  mainAccount?: boolean;
-  editProperties?: boolean;
-  editCallback?: () => void;
-}) {
-  // To-Do: Fetch player preview image from server using phone number
-  return (
-    <div class={`flex flex-row ${props.activeAccount ? "bg-surface0" : ""} `}>
-      <img
-        alt="Player Preview"
-        src={`${grugApiUrl}/avatar/thumbnail?i=${props.phone}`}
-        class="w-16 h-16"
-      ></img>
-      <div class="flex flex-col mx-2">
-        <p class="font-bold text-xl">{props.name}</p>{" "}
-        <p class="text-overlay2">{props.phone}</p>
-      </div>
-      <Show
-        when={props.activeAccount || props.mainAccount || props.editProperties}
-      >
-        <Show when={props.activeAccount || props.mainAccount}>
-          <div class="flex flex-col text-xs">
-            Details:
-            <Show when={props.mainAccount}>
-              <p>Main Account</p>
-            </Show>
-            <Show when={props.activeAccount}>
-              <p>Active Account</p>
-            </Show>
-          </div>
-        </Show>
-        <Show when={props.editProperties && props.activeAccount !== true}>
-          <div class="grid grid-row-3 mx-2">
-            {/* This is disgusting, but it works... */}
-            <div></div>
-            <button
-              class="bg-base px-2 rounded-xl"
-              onClick={props.editCallback}
-            >
-              Set Active
-            </button>
-            <div></div>
-          </div>
-        </Show>
-      </Show>
-    </div>
-  );
-}
-
+import { settingsManager, grugApiUrl } from "../..";
+import Player from "../components/Player";
 function SteamAccount(props: {
   image: string;
   username: string;
@@ -71,41 +18,39 @@ function SteamAccount(props: {
     </a>
   );
 }
+function PlayerPreview(props: { phone: string; callback: () => void }) {
+  return (
+    <div class={`flex flex-row bg-surface1`}>
+      <img
+        alt="Player Preview"
+        src={`${grugApiUrl}/avatar/thumbnail?i=${props.phone}`}
+        class="w-16 h-16"
+      ></img>
+      <div class="flex flex-col mx-2">
+        <input
+          class="font-bold text-xl"
+          maxLength={32}
+          id="player-name-input"
+        ></input>
+        <p class="text-overlay2">{props.phone}</p>
+      </div>
+      <div class="grid grid-row-3 mx-2">
+        {/* This is disgusting, but it works... */}
+        <div></div>
+        <button class="bg-base px-2 rounded-xl" onClick={props.callback}>
+          Save Account
+        </button>
+        <div></div>
+      </div>
+    </div>
+  );
+}
 export default function () {
   const [steamAccount, setSteamAccount] = createSignal(
     settingsManager.getSteamAccount()
   );
-  const [accounts, setAccounts] = createSignal(settingsManager.getAccounts(), {
-    /*
-    equals: (prev, next) => {
-      return false;
-      // when return false: update, when return true: not update.
-      console.log(prev);
-      console.log(next);
-      let isEqual = true;
-      if (prev.length !== next.length) {
-        console.log("different length");
-        isEqual = false;
-      }
-      prev.forEach((account, index) => {
-        const newAccount = next[index];
-        console.log(account);
-        console.log(newAccount);
-        if (
-          account.active_account !== newAccount.active_account ||
-          account.main_account !== newAccount.main_account ||
-          account.name !== newAccount.name ||
-          account.phone_number !== newAccount.phone_number
-        ) {
-          console.log("account has discrepancies");
-          isEqual = false;
-        }
-      });
-      console.log("Updating? " + !isEqual);
-      return isEqual;
-    },
-    */
-  });
+  const [accounts, setAccounts] = createSignal(settingsManager.getAccounts());
+  const [makingAccount, setMakingAccount] = createSignal(false);
   onCleanup(() => settingsManager.saveSettings());
   return (
     <div class="pt-8">
@@ -175,10 +120,40 @@ export default function () {
                 );
               }}
             </For>
+            <Show when={makingAccount()}>
+              <PlayerPreview
+                phone={settingsManager.getMainAccount()!.phone_number}
+                callback={async () => {
+                  const input = document.querySelector(
+                    "#player-name-input"
+                  ) as HTMLInputElement;
+                  if (input.value.length === 0) return false;
+                  if (
+                    settingsManager.addAccount({
+                      name: input.value,
+                      phone_number:
+                        settingsManager.getMainAccount()!.phone_number,
+                      main_account: false,
+                      active_account: false,
+                    })
+                  ) {
+                    setMakingAccount(false);
+                    setAccounts(settingsManager.getAccounts());
+                    await settingsManager.saveSettings();
+                    location.reload();
+                  } else {
+                    // error happened (name already exists)
+                    // to-do: warn user about this
+                  }
+                }}
+              ></PlayerPreview>
+            </Show>
             <button
               class="bg-base py-1 px-2 rounded-xl mt-4"
               onClick={() => {
-                // to-do: add account functionality
+                if (!makingAccount()) {
+                  setMakingAccount(true);
+                }
               }}
             >
               Add Account

@@ -4,6 +4,7 @@ import { grugApiUrl } from "../..";
 export default function (props: {
   name: string;
   phone: string;
+  truncateName?: boolean;
   activeAccount?: boolean;
   mainAccount?: boolean;
   editProperties?: boolean;
@@ -18,7 +19,13 @@ export default function (props: {
         class="w-16 h-16"
       ></img>
       <div class="flex flex-col mx-2">
-        <p class="font-bold text-xl">{props.name}</p>{" "}
+        <p
+          class={`font-bold text-xl ${
+            props.truncateName ? "text-ellipsis truncate max-w-[118px] " : ""
+          }`}
+        >
+          {props.name}
+        </p>{" "}
         <p class="text-overlay2">{props.phone}</p>
       </div>
       <Show

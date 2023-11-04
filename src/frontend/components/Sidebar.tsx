@@ -81,6 +81,7 @@ export default function () {
             <Player
               name={activeAccount()!.name}
               phone={activeAccount()!.phone_number}
+              truncateName={true}
             ></Player>
           </Show>
         </A>

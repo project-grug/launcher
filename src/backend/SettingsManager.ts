@@ -25,6 +25,7 @@ interface Settings {
 }
 class SettingsManager {
   private activeAccountChangeCallbacks: Array<(account: Account) => void> = [];
+  private universalPhoneNumber?: string;
   private settings!: Settings;
   constructor(settings?: Settings) {
     this.setSettings(
@@ -90,12 +91,29 @@ class SettingsManager {
     return this.settings.sub_rosa_accounts;
   }
   addAccount(account: Account) {
+    // check whether other accounts of this name exist
+    const foundAcc = this.settings.sub_rosa_accounts.find((acc) => {
+      if (acc.name === account.name) return true;
+    });
+    if (foundAcc) {
+      return false;
+    }
     this.settings.sub_rosa_accounts.push(account);
+    return true;
   }
   removeAccount(account: Account) {
     this.settings.sub_rosa_accounts = this.settings.sub_rosa_accounts.filter(
       (item) => item !== account
     );
+  }
+  getMainAccount() {
+    return this.settings.sub_rosa_accounts.find((acc) => {
+      console.log(acc);
+      if (acc.main_account) {
+        console.log("found main account of name " + acc.name);
+        return true;
+      }
+    });
   }
   getActiveAccount() {
     return this.settings.sub_rosa_accounts.find((acc) => {
