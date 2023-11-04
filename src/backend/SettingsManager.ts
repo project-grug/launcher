@@ -25,7 +25,6 @@ interface Settings {
 }
 class SettingsManager {
   private activeAccountChangeCallbacks: Array<(account: Account) => void> = [];
-  private universalPhoneNumber?: string;
   private settings!: Settings;
   constructor(settings?: Settings) {
     this.setSettings(
