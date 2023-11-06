@@ -46,10 +46,11 @@ function PlayerPreview(props: { phone: string; callback: () => void }) {
   );
 }
 export default function () {
+  const accountManager = settingsManager.accountManager;
   const [steamAccount, setSteamAccount] = createSignal(
-    settingsManager.getSteamAccount()
+    accountManager.getSteamAccount()
   );
-  const [accounts, setAccounts] = createSignal(settingsManager.getAccounts());
+  const [accounts, setAccounts] = createSignal(accountManager.getAccounts());
   const [makingAccount, setMakingAccount] = createSignal(false);
   onCleanup(() => settingsManager.saveSettings());
   return (
@@ -103,7 +104,7 @@ export default function () {
                     activeAccount={account.active_account}
                     editProperties={true}
                     editCallback={async () => {
-                      settingsManager.setAccountActive(account);
+                      accountManager.setAccountActive(account);
                       const settings = await settingsManager.getSettings();
                       console.log(settings);
                       setAccounts(settings.sub_rosa_accounts);
@@ -117,7 +118,7 @@ export default function () {
                       location.reload();
                     }}
                     deleteCallback={async () => {
-                      settingsManager.removeAccount(account);
+                      accountManager.removeAccount(account);
                       await settingsManager.saveSettings();
                       location.reload();
                     }}
@@ -127,23 +128,23 @@ export default function () {
             </For>
             <Show when={makingAccount()}>
               <PlayerPreview
-                phone={settingsManager.getMainAccount()!.phone_number}
+                phone={accountManager.getMainAccount()!.phone_number}
                 callback={async () => {
                   const input = document.querySelector(
                     "#player-name-input"
                   ) as HTMLInputElement;
                   if (input.value.length === 0) return false;
                   if (
-                    settingsManager.addAccount({
+                    accountManager.addAccount({
                       name: input.value,
                       phone_number:
-                        settingsManager.getMainAccount()!.phone_number,
+                        accountManager.getMainAccount()!.phone_number,
                       main_account: false,
                       active_account: false,
                     })
                   ) {
                     setMakingAccount(false);
-                    setAccounts(settingsManager.getAccounts());
+                    setAccounts(accountManager.getAccounts());
                     await settingsManager.saveSettings();
                     location.reload();
                   } else {

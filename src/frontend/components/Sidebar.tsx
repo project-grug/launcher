@@ -28,14 +28,14 @@ function SidebarButton(props: {
 }
 
 export default function () {
+  const accountManager = settingsManager.accountManager;
   const [activeButton, setActiveButton] = createSignal(0);
   const [activeAccount, setActiveAccount] = createSignal(
-    settingsManager.getActiveAccount()
+    accountManager.getActiveAccount()
   );
-  settingsManager.addAccountActiveCallback((account) =>
+  accountManager.addAccountActiveCallback((account) =>
     setActiveAccount(account)
   );
-  console.log(activeAccount());
   return (
     <div class="h-screen max-h-full flex fixed top-0 flex-col w-64 gap-y-4 bg-mantle">
       <h1 class="text-xl font-bold tracking-wider mx-4 mt-4">Project Greg</h1>

@@ -1,5 +1,5 @@
 import { Show } from "solid-js";
-import { grugApiUrl, settingsManager } from "../..";
+import { grugApiUrl } from "../..";
 import { Icon } from "solid-heroicons";
 import { trash } from "solid-heroicons/solid";
 
