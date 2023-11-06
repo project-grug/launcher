@@ -116,6 +116,11 @@ export default function () {
                       // accounts again...
                       location.reload();
                     }}
+                    deleteCallback={async () => {
+                      settingsManager.removeAccount(account);
+                      await settingsManager.saveSettings();
+                      location.reload();
+                    }}
                   ></Player>
                 );
               }}

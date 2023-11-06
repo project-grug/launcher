@@ -1,5 +1,7 @@
 import { Show } from "solid-js";
-import { grugApiUrl } from "../..";
+import { grugApiUrl, settingsManager } from "../..";
+import { Icon } from "solid-heroicons";
+import { trash } from "solid-heroicons/solid";
 
 export default function (props: {
   name: string;
@@ -8,6 +10,7 @@ export default function (props: {
   activeAccount?: boolean;
   mainAccount?: boolean;
   editProperties?: boolean;
+  deleteCallback?: () => void;
   editCallback?: () => void;
 }) {
   // To-Do: Fetch player preview image from server using phone number
@@ -42,18 +45,30 @@ export default function (props: {
             </Show>
           </div>
         </Show>
-        <Show when={props.editProperties && props.activeAccount !== true}>
-          <div class="grid grid-row-3 mx-2">
-            {/* This is disgusting, but it works... */}
-            <div></div>
-            <button
-              class="bg-base px-2 rounded-xl"
-              onClick={props.editCallback}
-            >
-              Set Active
-            </button>
-            <div></div>
-          </div>
+        <Show when={props.editProperties}>
+          <Show when={!props.activeAccount}>
+            <div class="grid grid-row-3 mx-2">
+              {/* This is disgusting, but it works... */}
+              <div></div>
+              <button
+                class="bg-base px-2 rounded-xl"
+                onClick={props.editCallback}
+              >
+                Set Active
+              </button>
+              <div></div>
+            </div>
+            <Show when={!props.mainAccount}>
+              <div class="grid grid-row-3 mx-2">
+                {/* This is disgusting, but it works... */}
+                <div></div>
+                <button onClick={props.deleteCallback}>
+                  <Icon path={trash} class="w-8"></Icon>
+                </button>
+                <div></div>
+              </div>
+            </Show>
+          </Show>
         </Show>
       </Show>
     </div>
