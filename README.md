@@ -23,4 +23,4 @@ Note that compilation has not been tested on every system configuration and may 
 
 ## Contributing
 
-In order to run the app locally, you can follow the steps in the [Usage](#usage) section. Please be sure to use an editor or otherwise take advantage of [Prettier](https://prettier.io/), [ESLint](https://eslint.org/) and [Headwind](https://github.com/heybourn/headwind) to ensure your code meets the project's style and quality standards.
+In order to run the app locally, you can follow the steps in the [Usage](#usage) section. Please be sure to use an editor or otherwise take advantage of [Prettier](https://prettier.io/), [ESLint](https://eslint.org/) and [Headwind](https://github.com/heybourn/headwind) to ensure your code meets the project's style and quality standards. Thanks!
